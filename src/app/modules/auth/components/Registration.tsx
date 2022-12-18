@@ -9,6 +9,7 @@ import {Link} from 'react-router-dom'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {PasswordMeterComponent} from '../../../../_metronic/assets/ts/components'
 import {useAuth} from '../core/Auth'
+import requestUsersApi from '../../../Api/requestUsers'
 
 const initialValues = {
   firstname: '',
@@ -17,6 +18,14 @@ const initialValues = {
   password: '',
   changepassword: '',
   acceptTerms: false,
+}
+
+type users = {
+  user: string
+  name: string
+  surname: string
+  email: string
+  password: string
 }
 
 const registrationSchema = Yup.object().shape({
@@ -74,6 +83,11 @@ export function Registration() {
       }
     },
   })
+
+  async function createUsers(){
+    const response = await requestUsersApi.createUsers()
+    return response
+  }
 
   useEffect(() => {
     PasswordMeterComponent.bootstrap()

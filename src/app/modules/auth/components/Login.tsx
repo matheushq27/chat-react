@@ -7,22 +7,22 @@ import {useFormik} from 'formik'
 import {getUserByToken, login, connectChat} from '../core/_requests'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {useAuth} from '../core/Auth'
+import requestUsersApi from '../../../Api/requestUsers'
 
 const loginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Wrong email format')
-    .min(3, 'Minimum 3 symbols')
-    .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
+  user: Yup.string()
+    .min(3, 'Mínimo 3 caracteres')
+    .max(50, 'Máximo 50 caracteres')
+    .required('O usuário é obrigatório'),
   password: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('Password is required'),
+    .required('A senha é obrigatória'),
 })
 
 const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
+  user: 'usuario',
+  password: 'senha',
 }
 
 /*
@@ -41,12 +41,28 @@ export function Login() {
     onSubmit: async (values, {setStatus, setSubmitting}) => {
       setLoading(true)
       try {
-        const {data: auth} = await login(values.email, values.password)
-        saveAuth(auth)
-        const {data: user} = await getUserByToken(auth.api_token)
-        setCurrentUser(user)
-        const resp = await connectChat(values.email)
-        console.log(resp)
+         //const {data: auth} = await login(values.email, values.password)
+         //const {data: auth} = await login("admin@demo.com", "demo")
+         //const resp = await requestUsersApi.getUsersByUserName("joao")
+         const resp = await requestUsersApi.login(values.user, values.password)
+        //saveAuth(auth)
+        //const {data: user} = await getUserByToken(auth.api_token)
+        //setCurrentUser(auth)
+        //const resp = await connectChat(values.email)
+        if(resp.id)
+        {
+          saveAuth(resp)
+          setCurrentUser(resp)
+        }
+        else
+        {
+          saveAuth(undefined)
+          setStatus('Usuário ou senha incorretos!')
+          setSubmitting(false)
+          setLoading(false)
+          console.log(resp)
+        }
+      
       } catch (error) {
         console.error(error)
         saveAuth(undefined)
@@ -121,39 +137,32 @@ export function Login() {
       </div> */}
       
 
-      {/* {formik.status ? (
+      {formik.status &&
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>{formik.status}</div>
         </div>
-      ) : (
-        <div className='mb-10 bg-light-info p-8 rounded'>
-          <div className='text-info'>
-            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
-            continue.
-          </div>
-        </div>
-      )} */}
+      }
 
       {/* begin::Form group */}
       <div className='fv-row mb-8'>
-        <label className='form-label fs-6 fw-bolder text-dark'>Email</label>
+        <label className='form-label fs-6 fw-bolder text-dark'>Usuário</label>
         <input
-          placeholder='Email'
-          {...formik.getFieldProps('email')}
+          placeholder='Usuário'
+          {...formik.getFieldProps('user')}
           className={clsx(
             'form-control bg-transparent',
-            {'is-invalid': formik.touched.email && formik.errors.email},
+            {'is-invalid': formik.touched.user && formik.errors.user},
             {
-              'is-valid': formik.touched.email && !formik.errors.email,
+              'is-valid': formik.touched.user && !formik.errors.user,
             }
           )}
-          type='email'
-          name='email'
+          type='text'
+          name='user'
           autoComplete='off'
         />
-        {formik.touched.email && formik.errors.email && (
+        {formik.touched.user && formik.errors.user && (
           <div className='fv-plugins-message-container'>
-            <span role='alert'>{formik.errors.email}</span>
+            <span role='alert'>{formik.errors.user}</span>
           </div>
         )}
       </div>

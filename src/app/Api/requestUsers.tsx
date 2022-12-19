@@ -1,13 +1,7 @@
+import { usersType } from '../types/users'
 import axios from 'axios'
 const URL_SERVER = "http://localhost:3000/"
 
-type users = {
-    user: string
-    name: string
-    surname: string
-    email: string
-    password: string
-}
 
 
 const requestUsersApi = {
@@ -22,7 +16,32 @@ const requestUsersApi = {
             return error
         }
     },
-    createUsers: async (users: users)=>{
+    getUsersByUserName: async (userName: string)=>{
+        try
+        {
+            let response = await axios.get(`${URL_SERVER}users/${userName}`)
+            return response.data
+        }
+        catch(error)
+        {
+            return error
+        }
+    },
+    login: async (userName: string, password: string)=>{
+        try
+        {
+            let response = await axios.post(`${URL_SERVER}login`, {
+                user: userName,
+                password: password
+            })
+            return response.data
+        }
+        catch(error)
+        {
+            return error
+        }
+    },
+    createUsers: async (users: usersType)=>{
         try
         {
             let response = await axios.post(`${URL_SERVER}users`, users)

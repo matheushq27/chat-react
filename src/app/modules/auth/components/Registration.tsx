@@ -10,49 +10,55 @@ import {toAbsoluteUrl} from '../../../../_metronic/helpers'
 import {PasswordMeterComponent} from '../../../../_metronic/assets/ts/components'
 import {useAuth} from '../core/Auth'
 import requestUsersApi from '../../../Api/requestUsers'
+import { usersType } from '../../../types/users'
+
+// const initialValues = {
+//   firstname: '',
+//   lastname: '',
+//   email: '',
+//   password: '',
+//   changepassword: '',
+//   acceptTerms: false,
+// }
 
 const initialValues = {
-  firstname: '',
-  lastname: '',
+  user: '',
+  name: '',
+  surname: '',
   email: '',
   password: '',
   changepassword: '',
   acceptTerms: false,
 }
-
-type users = {
-  user: string
-  name: string
-  surname: string
-  email: string
-  password: string
-}
-
 const registrationSchema = Yup.object().shape({
-  firstname: Yup.string()
+  user: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('First name is required'),
+    .required('O usuário é obrigatório'),
+  name: Yup.string()
+    .min(3, 'Minimum 3 symbols')
+    .max(50, 'Maximum 50 symbols')
+    .required('O nome é obrigatório'),
   email: Yup.string()
     .email('Wrong email format')
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('Email is required'),
-  lastname: Yup.string()
+    .required('Email é obrigatório'),
+  surname: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('Last name is required'),
+    .required('O sobrenome é obrigatório'),
   password: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
-    .required('Password is required'),
+    .required('A senha é obrigatória'),
   changepassword: Yup.string()
-    .required('Password confirmation is required')
+    .required('A confirmação da senha é obrigatória')
     .when('password', {
       is: (val: string) => (val && val.length > 0 ? true : false),
-      then: Yup.string().oneOf([Yup.ref('password')], "Password and Confirm Password didn't match"),
+      then: Yup.string().oneOf([Yup.ref('password')], "Senha e Confirmar senha não correspondem"),
     }),
-  acceptTerms: Yup.bool().required('You must accept the terms and conditions'),
+  acceptTerms: Yup.bool().required('Você deve aceitar os Termos e Condições'),
 })
 
 export function Registration() {
@@ -62,32 +68,46 @@ export function Registration() {
     initialValues,
     validationSchema: registrationSchema,
     onSubmit: async (values, {setStatus, setSubmitting}) => {
+      console.log('ENtrou')
+      const objUser = {
+        name: values.name, 
+        surname: values.surname,
+        user: values.user, 
+        email: values.email, 
+        password: values.password
+      }
+
       setLoading(true)
       try {
-        const {data: auth} = await register(
-          values.email,
-          values.firstname,
-          values.lastname,
-          values.password,
-          values.changepassword
-        )
-        saveAuth(auth)
-        const {data: user} = await getUserByToken(auth.api_token)
-        setCurrentUser(user)
+        // const {data: auth} = await register(
+        //   values.email,
+        //   values.name,
+        //   values.surname,
+        //   values.password,
+        //   values.changepassword
+        // )
+        
+        const resp = await createUsers(objUser)
+        setLoading(false)
+        saveAuth(resp)
+        // const {data: user} = await getUserByToken(auth.api_token)
+        setCurrentUser(resp)
+        console.log(resp)
       } catch (error) {
         console.error(error)
         saveAuth(undefined)
-        setStatus('The registration details is incorrect')
+        setStatus('Os dados cadastrais estão incorretos')
         setSubmitting(false)
         setLoading(false)
       }
     },
   })
 
-  async function createUsers(){
-    const response = await requestUsersApi.createUsers()
+  async function createUsers(users: usersType){
+    const response = await requestUsersApi.createUsers(users)
     return response
   }
+
 
   useEffect(() => {
     PasswordMeterComponent.bootstrap()
@@ -114,6 +134,34 @@ export function Registration() {
         </div>
       )}
 
+      {/* begin::Form group User */}
+      <div className='fv-row mb-8'>
+        <label className='form-label fw-bolder text-dark fs-6'>Usuário</label>
+        <input
+          placeholder='Usuário'
+          type='text'
+          autoComplete='off'
+          {...formik.getFieldProps('user')}
+          className={clsx(
+            'form-control bg-transparent',
+            {
+              'is-invalid': formik.touched.user && formik.errors.user,
+            },
+            {
+              'is-valid': formik.touched.user && !formik.errors.user,
+            }
+          )}
+        />
+        {formik.touched.user && formik.errors.user && (
+          <div className='fv-plugins-message-container'>
+            <div className='fv-help-block'>
+              <span role='alert'>{formik.errors.user}</span>
+            </div>
+          </div>
+        )}
+      </div>
+      {/* end::Form group */}
+
       {/* begin::Form group Firstname */}
       <div className='fv-row mb-8'>
         <label className='form-label fw-bolder text-dark fs-6'>Nome</label>
@@ -121,21 +169,21 @@ export function Registration() {
           placeholder='Nome'
           type='text'
           autoComplete='off'
-          {...formik.getFieldProps('firstname')}
+          {...formik.getFieldProps('name')}
           className={clsx(
             'form-control bg-transparent',
             {
-              'is-invalid': formik.touched.firstname && formik.errors.firstname,
+              'is-invalid': formik.touched.name && formik.errors.name,
             },
             {
-              'is-valid': formik.touched.firstname && !formik.errors.firstname,
+              'is-valid': formik.touched.name && !formik.errors.name,
             }
           )}
         />
-        {formik.touched.firstname && formik.errors.firstname && (
+        {formik.touched.name && formik.errors.name && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.firstname}</span>
+              <span role='alert'>{formik.errors.name}</span>
             </div>
           </div>
         )}
@@ -148,21 +196,21 @@ export function Registration() {
           placeholder='Sobrenome'
           type='text'
           autoComplete='off'
-          {...formik.getFieldProps('lastname')}
+          {...formik.getFieldProps('surname')}
           className={clsx(
             'form-control bg-transparent',
             {
-              'is-invalid': formik.touched.lastname && formik.errors.lastname,
+              'is-invalid': formik.touched.surname && formik.errors.surname,
             },
             {
-              'is-valid': formik.touched.lastname && !formik.errors.lastname,
+              'is-valid': formik.touched.surname && !formik.errors.surname,
             }
           )}
         />
-        {formik.touched.lastname && formik.errors.lastname && (
+        {formik.touched.surname && formik.errors.surname && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.lastname}</span>
+              <span role='alert'>{formik.errors.surname}</span>
             </div>
           </div>
         )}

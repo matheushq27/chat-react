@@ -31,7 +31,7 @@ function SidebarChats({users}: any)
               data-kt-scroll-offset='0px'
             >
              
-             {
+             {/* {
           users.map((user: any)=>{
             return(
               <div key={user.name}>
@@ -59,7 +59,7 @@ function SidebarChats({users}: any)
             </div>
             )
           })
-          }
+          } */}
 
             </div>
           </div>

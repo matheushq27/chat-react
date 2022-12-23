@@ -5,3 +5,13 @@ export type usersType = {
     email: string
     password: string
 }
+
+export type usersTypeFriend = {
+    users: arrayUserFriend[]
+}
+
+export type arrayUserFriend = {
+    user: string
+    name: string
+    email: string
+}

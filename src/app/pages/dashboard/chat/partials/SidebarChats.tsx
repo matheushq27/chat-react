@@ -1,4 +1,7 @@
 import {KTSVG, toAbsoluteUrl} from '../../../../../_metronic/helpers'
+import { usersTypeFriend, arrayUserFriend } from '../../../../types/users'
+import {io} from 'socket.io-client'
+import { useState, useEffect } from 'react'
 
 
 function SidebarChats({users}: any)
@@ -30,36 +33,36 @@ function SidebarChats({users}: any)
               data-kt-scroll-wrappers='#kt_content, #kt_chat_contacts_body'
               data-kt-scroll-offset='0px'
             >
+             {users &&
              
-             {/* {
-          users.map((user: any)=>{
-            return(
-              <div key={user.name}>
-              <div className='d-flex flex-stack py-4'>
-              <div className='d-flex align-items-center'>
-                <div className='symbol symbol-45px symbol-circle'>
-                  <span className='symbol-label bg-light-danger text-danger fs-6 fw-bolder'>
-                    M
-                  </span>
-                </div>
+             users.map((user: arrayUserFriend)=>{
+                return(
+                  <div key={user.name}>
+                  <div className='d-flex flex-stack py-4'>
+                  <div className='d-flex align-items-center'>
+                    <div className='symbol symbol-45px symbol-circle'>
+                      <span className='symbol-label bg-light-danger text-danger fs-6 fw-bolder'>
+                        M
+                      </span>
+                    </div>
 
-                <div className='ms-5'>
-                  <a href='#' className='fs-5 fw-bolder text-gray-900 text-hover-primary mb-2'>
-                  {user.name}
-                  </a>
-                  <div className='fw-bold text-gray-400'>{user.email}</div>
-                </div>
-              </div>
+                    <div className='ms-5'>
+                      <a href='#' className='fs-5 fw-bolder text-gray-900 text-hover-primary mb-2'>
+                      {user.name}
+                      </a>
+                      <div className='fw-bold text-gray-400'>{user.email}</div>
+                    </div>
+                  </div>
 
-              <div className='d-flex flex-column align-items-end ms-2'>
-                <span className='text-muted fs-7 mb-1'>5 hrs</span>
-              </div>
-            </div>
-            <div className='separator separator-dashed d-none'></div>
-            </div>
-            )
-          })
-          } */}
+                  <div className='d-flex flex-column align-items-end ms-2'>
+                    <span className='text-muted fs-7 mb-1'>5 hrs</span>
+                  </div>
+                </div>
+                <div className='separator separator-dashed d-none'></div>
+                </div>
+                )
+              })
+            }
 
             </div>
           </div>
